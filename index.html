@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#06111f">
+<meta name="description" content="GENA — персональный голосовой ИИ-помощник">
+<link rel="manifest" href="manifest.webmanifest">
+<title>GENA — AI Assistant</title>
+<style>
+:root{--bg:#030914;--panel:rgba(5,25,44,.84);--line:#087db7;--cyan:#36caff;--blue:#087cff;--text:#d9f5ff;--muted:#77a9c5;--green:#39f2bd}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;background:radial-gradient(ellipse at 50% 30%,#0a3150 0,#061525 35%,var(--bg) 75%);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;overflow-x:hidden}
+body:before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.17;background-image:linear-gradient(rgba(54,202,255,.18) 1px,transparent 1px),linear-gradient(90deg,rgba(54,202,255,.18) 1px,transparent 1px);background-size:32px 32px;mask-image:linear-gradient(to bottom,black,transparent 85%)}
+.app{max-width:760px;margin:auto;padding:18px 16px calc(24px + env(safe-area-inset-bottom));position:relative}
+header{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #12628c;padding:8px 2px 16px}
+.brand{font-weight:800;letter-spacing:3px;font-size:22px;color:#8be2ff;text-shadow:0 0 16px #149bff}
+.sub{font-size:10px;color:var(--muted);letter-spacing:2px}
+.status{font-size:11px;color:var(--green);border:1px solid #168c80;padding:6px 10px;border-radius:20px}
+.core-wrap{height:300px;display:grid;place-items:center;position:relative;margin:16px 0 8px}
+.core{width:220px;height:220px;border-radius:50%;display:grid;place-items:center;position:relative;border:1px solid #24baff;box-shadow:0 0 24px #007bff66,inset 0 0 32px #007bff44}
+.core:before,.core:after{content:"";position:absolute;border-radius:50%;inset:-15px;border:2px dashed #1b9bdc;animation:spin 24s linear infinite}
+.core:after{inset:-29px;border:1px solid #0d6d9e;animation-direction:reverse;animation-duration:16s}
+.orb{width:138px;height:138px;border-radius:50%;background:radial-gradient(circle at 40% 35%,#a8f0ff 0,#27bfff 9%,#0876c8 35%,#03172c 72%);box-shadow:0 0 35px #16aaff,0 0 85px #087cff66;display:grid;place-items:center;text-align:center}
+.orb strong{font-size:26px;letter-spacing:3px;text-shadow:0 0 12px #fff}
+.orb small{display:block;font-size:10px;letter-spacing:3px;color:#c4f5ff;margin-top:5px}
+.listening .orb{animation:pulse 1.1s ease-in-out infinite}
+.listening .core:before{animation-duration:4s;border-color:#65ffe1}
+@keyframes spin{to{transform:rotate(360deg)}}@keyframes pulse{50%{transform:scale(1.08);box-shadow:0 0 55px #27e4ff,0 0 110px #087cff}}
+.hint{text-align:center;color:var(--muted);font-size:12px;letter-spacing:2px;margin-top:-5px}
+.panel{background:var(--panel);border:1px solid #12628c;border-radius:14px;box-shadow:0 0 22px #007bff16;padding:14px;margin:14px 0}
+.panel-title{font-size:11px;letter-spacing:2px;color:#54cfff;margin-bottom:10px}
+.chat{height:190px;overflow:auto;display:flex;flex-direction:column;gap:10px}
+.msg{max-width:92%;padding:10px 12px;border-radius:10px;font-size:14px;line-height:1.45;white-space:pre-wrap}
+.bot{align-self:flex-start;background:#092c49;border:1px solid #12628c}
+.user{align-self:flex-end;background:#073c64;border:1px solid #168dcc}
+.label{display:block;color:#67d8ff;font-size:10px;letter-spacing:1px;margin-bottom:4px}
+.controls{display:flex;gap:10px;align-items:center}
+#mic{flex:0 0 64px;height:64px;border-radius:50%;border:1px solid #39caff;background:radial-gradient(circle,#0e80c5,#05213b);color:white;font-size:25px;box-shadow:0 0 22px #078cff88}
+#mic:active{transform:scale(.96)}
+input{min-width:0;flex:1;background:#041626;border:1px solid #12628c;border-radius:12px;padding:14px;color:var(--text);font-size:15px;outline:none}
+#send{background:#075b91;border:1px solid #2abaff;border-radius:12px;color:white;padding:14px 16px;font-weight:700}
+.note{color:#759db4;font-size:11px;line-height:1.5;text-align:center;margin:14px 8px}
+footer{display:flex;justify-content:center;gap:18px;color:#4d8cac;font-size:10px;letter-spacing:1px}
+button{cursor:pointer}
+@media(min-width:600px){.core-wrap{height:340px}.core{width:245px;height:245px}.orb{width:155px;height:155px}}
+</style>
+</head>
+<body>
+<div class="app">
+<header><div><div class="brand">GENA <span style="font-size:12px">v0.1</span></div><div class="sub">PERSONAL AI ASSISTANT</div></div><div class="status" id="status">● ГОТОВ</div></header>
+<section class="core-wrap" id="coreWrap"><div class="core"><div class="orb"><div><strong>GENA</strong><small>ONLINE</small></div></div></div></section>
+<div class="hint" id="hint">НАЖМИТЕ НА МИКРОФОН И ГОВОРИТЕ</div>
+<section class="panel"><div class="panel-title">◇ ДИАЛОГ С ГЕНОЙ</div><div class="chat" id="chat" aria-live="polite"><div class="msg bot"><span class="label">ГЕНА</span>Здравствуйте. Я Гена, ваш персональный помощник. Пока это первая версия: я могу услышать короткую команду и ответить голосом. Подключение полноценного ИИ добавим следующим этапом.</div></div></section>
+<div class="controls"><button id="mic" aria-label="Начать голосовой ввод">🎙</button><input id="entry" placeholder="Напишите сообщение..." autocomplete="off"><button id="send">➤</button></div>
+<div class="note">Голосовой ввод зависит от поддержки браузера и разрешения на микрофон. Не вводите пароли и личные секреты.</div>
+<footer><span>GENA MOBILE</span><span>VOICE • CHAT • ASSIST</span></footer>
+</div>
+<script>
+const chat=document.getElementById('chat'), entry=document.getElementById('entry'), mic=document.getElementById('mic'), statusEl=document.getElementById('status'), hint=document.getElementById('hint'), coreWrap=document.getElementById('coreWrap');
+function add(text,who){const d=document.createElement('div');d.className='msg '+who;const l=document.createElement('span');l.className='label';l.textContent=who==='bot'?'ГЕНА':'ВЫ';d.append(l,document.createTextNode(text));chat.appendChild(d);chat.scrollTop=chat.scrollHeight}
+function speak(text){if(!('speechSynthesis' in window))return; speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(text);u.lang='ru-RU';u.rate=.96;u.pitch=.9;speechSynthesis.speak(u)}
+function reply(text){
+ const t=text.toLowerCase(); let answer;
+ if(/привет|здравствуй|добрый/.test(t)) answer='Здравствуйте. Рад вас слышать. Чем могу помочь?';
+ else if(/совет|посоветуй|что делать/.test(t)) answer='Давайте спокойно разберёмся. Расскажите, что произошло, чего вы хотите добиться и какие варианты уже рассматривали.';
+ else if(/кто ты|как тебя зовут/.test(t)) answer='Я Гена — ваш персональный ИИ-помощник. Это ранняя версия моего интерфейса.';
+ else if(/спасибо/.test(t)) answer='Всегда пожалуйста. Обращайтесь, когда понадобится помощь.';
+ else if(/пока|до свидания/.test(t)) answer='До встречи. Буду готов помочь, когда вы вернётесь.';
+ else answer='Я получил ваше сообщение. Пока мой интеллект работает в демонстрационном режиме. На следующем этапе подключим языковую модель, чтобы я мог полноценно рассуждать, искать информацию и давать советы.';
+ add(answer,'bot');speak(answer)
+}
+function send(){const v=entry.value.trim();if(!v)return;add(v,'user');entry.value='';reply(v)}
+document.getElementById('send').addEventListener('click',send);entry.addEventListener('keydown',e=>{if(e.key==='Enter')send()});
+const SR=window.SpeechRecognition||window.webkitSpeechRecognition;let rec;
+if(SR){rec=new SR();rec.lang='ru-RU';rec.interimResults=false;rec.maxAlternatives=1;rec.onstart=()=>{statusEl.textContent='● СЛУШАЮ';hint.textContent='ГОВОРИТЕ…';coreWrap.classList.add('listening')};rec.onresult=e=>{entry.value=e.results[0][0].transcript;send()};rec.onerror=e=>{hint.textContent=e.error==='not-allowed'?'РАЗРЕШИТЕ ДОСТУП К МИКРОФОНУ':'НЕ УДАЛОСЬ РАСПОЗНАТЬ РЕЧЬ';};rec.onend=()=>{statusEl.textContent='● ГОТОВ';coreWrap.classList.remove('listening');if(hint.textContent==='ГОВОРИТЕ…')hint.textContent='НАЖМИТЕ НА МИКРОФОН И ГОВОРИТЕ'};mic.addEventListener('click',()=>{try{rec.start()}catch(e){}})}
+else{mic.addEventListener('click',()=>{hint.textContent='ГОЛОСОВОЙ ВВОД НЕ ПОДДЕРЖИВАЕТСЯ ЭТИМ БРАУЗЕРОМ'})}
+if('serviceWorker' in navigator && location.protocol.startsWith('http'))navigator.serviceWorker.register('./sw.js').catch(()=>{});
+</script>
+</body>
+</html>

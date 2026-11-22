@@ -1,0 +1,9 @@
+{
+  "name": "GENA — Персональный ИИ-помощник",
+  "short_name": "GENA",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#030914",
+  "theme_color": "#06111f",
+  "lang": "ru"
+}
