@@ -59,7 +59,7 @@ button{cursor:pointer}
 <script>
 const chat=document.getElementById('chat'), entry=document.getElementById('entry'), mic=document.getElementById('mic'), statusEl=document.getElementById('status'), hint=document.getElementById('hint'), coreWrap=document.getElementById('coreWrap');
 function add(text,who){const d=document.createElement('div');d.className='msg '+who;const l=document.createElement('span');l.className='label';l.textContent=who==='bot'?'ГЕНА':'ВЫ';d.append(l,document.createTextNode(text));chat.appendChild(d);chat.scrollTop=chat.scrollHeight}
-function speak(text){if(!('speechSynthesis' in window))return; speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(text);u.lang='ru-RU';u.rate=.90;u.pitch=75.;speechSynthesis.speak(u)}
+function speak(text){if(!('speechSynthesis' in window))return; speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(text);u.lang='ru-RU';u.rate=.90;u.pitch=9.;speechSynthesis.speak(u)}
 function reply(text){
  const t=text.toLowerCase(); let answer;
  if(/привет|здравствуй|добрый/.test(t)) answer='Здравствуйте. Рад вас слышать. Чем могу помочь?';
