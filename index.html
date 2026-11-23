@@ -61,7 +61,48 @@ const chat=document.getElementById('chat'), entry=document.getElementById('entry
 function add(text,who){const d=document.createElement('div');d.className='msg '+who;const l=document.createElement('span');l.className='label';l.textContent=who==='bot'?'ГЕНА':'ВЫ';d.append(l,document.createTextNode(text));chat.appendChild(d);chat.scrollTop=chat.scrollHeight}
 function speak(text){if(!('speechSynthesis' in window))return; speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(text);const voices = speechSynthesis.getVoices();
 u.voice = voices.find(v => v.lang.startsWith('ru')) || null;u.lang='ru-RU';u.rate=.96;u.pitch=9.;speechSynthesis.speak(u)}
-function reply(text){
+async function reply(text) {
+  try {
+    const response = await fetch("http://127.0.0.1:8080/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        model: "local-model",
+        messages: [
+          {
+            role: "system",
+            content: "Ты GENA — дружелюбный персональный ИИ-помощник. Отвечай на русском языке, понятно и естественно."
+          },
+          {
+            role: "user",
+            content: text
+          }
+        ],
+        temperature: 0.7,
+        max_tokens: 180
+      })
+    });
+
+    if (!response.ok) {
+      throw new Error("Ошибка сервера: " + response.status);
+    }
+
+    const data = await response.json();
+    const answer = data.choices[0].message.content;
+
+    add(answer, "bot");
+    speak(answer);
+
+  } catch (error) {
+    const answer = "Не удалось связаться с моей моделью. Проверь, работает ли сервер в Termux.";
+    add(answer, "bot");
+    speak(answer);
+    console.error(error);
+  }
+}
+
  const t=text.toLowerCase(); let answer;
  if(/привет|здравствуй|добрый/.test(t)) answer='Здравствуйте. Рад вас слышать. Чем могу помочь?';
  else if(/совет|посоветуй|что делать/.test(t)) answer='Давайте спокойно разберёмся. Расскажите, что произошло, чего вы хотите добиться и какие варианты уже рассматривали.';
