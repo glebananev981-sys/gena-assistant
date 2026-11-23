@@ -107,12 +107,14 @@ async function reply(text) {
 
  add(answer,'bot');speak(answer)
 }
-function send(){const v=entry.value.trim();if(!v)return;add(v,'user');entry.value='';reply(v)}
-document.getElementById('send').addEventListener('click',send);entry.addEventListener('keydown',e=>{if(e.key==='Enter')send()});
-const SR=window.SpeechRecognition||window.webkitSpeechRecognition;let rec;
-if(SR){rec=new SR();rec.lang='ru-RU';rec.interimResults=false;rec.maxAlternatives=1;rec.onstart=()=>{statusEl.textContent='● СЛУШАЮ';hint.textContent='ГОВОРИТЕ…';coreWrap.classList.add('listening')};rec.onresult=e=>{entry.value=e.results[0][0].transcript;send()};rec.onerror=e=>{hint.textContent=e.error==='not-allowed'?'РАЗРЕШИТЕ ДОСТУП К МИКРОФОНУ':'НЕ УДАЛОСЬ РАСПОЗНАТЬ РЕЧЬ';};rec.onend=()=>{statusEl.textContent='● ГОТОВ';coreWrap.classList.remove('listening');if(hint.textContent==='ГОВОРИТЕ…')hint.textContent='НАЖМИТЕ НА МИКРОФОН И ГОВОРИТЕ'};mic.addEventListener('click',()=>{try{rec.start()}catch(e){}})}
-else{mic.addEventListener('click',()=>{hint.textContent='ГОЛОСОВОЙ ВВОД НЕ ПОДДЕРЖИВАЕТСЯ ЭТИМ БРАУЗЕРОМ'})}
-if('serviceWorker' in navigator && location.protocol.startsWith('http'))navigator.serviceWorker.register('./sw.js').catch(()=>{});
+function send(){async function send(){
+  const v = entry.value.trim();
+  if (!v) return;
+
+  add(v, 'user');
+  entry.value = '';
+  await reply(v);
+}
 </script>
 </body>
 </html>
